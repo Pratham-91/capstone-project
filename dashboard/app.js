@@ -11,6 +11,19 @@ const plotlyLayoutTemplate = {
 let dashboardData = null;
 let currentTicker = null;
 
+// Formatters
+const formatCurrency = new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 2
+});
+
+const formatPercent = new Intl.NumberFormat('en-IN', {
+    style: 'percent',
+    maximumFractionDigits: 2,
+    signDisplay: 'always'
+});
+
 // Fetch data and initialize
 async function initDashboard() {
     try {
@@ -29,9 +42,16 @@ async function initDashboard() {
         renderAllocationChart();
         renderCorrelationChart();
         renderVolatilityChart();
+        renderSignalsTable();
         
+        // Hide loading overlay
+        setTimeout(() => {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }, 500);
+
     } catch (error) {
         console.error("Failed to load dashboard data:", error);
+        document.querySelector('#loading-overlay p').innerText = "Error loading data. Retrying...";
         setTimeout(initDashboard, 2000); // Retry if file is still being generated
     }
 }
@@ -88,13 +108,16 @@ function renderForecastChart() {
         y: predicted,
         mode: 'lines',
         name: 'LSTM Predicted',
-        line: { color: '#3b82f6', width: 2, dash: 'dot' }
+        line: { color: '#3b82f6', width: 2, dash: 'dot' },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(59, 130, 246, 0.1)'
     };
     
     const layout = {
         ...plotlyLayoutTemplate,
         hovermode: 'x unified',
-        legend: { orientation: 'h', y: 1.1 }
+        legend: { orientation: 'h', y: 1.1 },
+        yaxis: { ...plotlyLayoutTemplate.yaxis, tickprefix: '₹' }
     };
     
     Plotly.newPlot('forecast-chart', [traceActual, tracePred], layout, {responsive: true, displayModeBar: false});
@@ -127,6 +150,12 @@ function renderAllocationChart() {
         }]
     };
     
+    const customHoverData = amounts.map(a => formatCurrency.format(a));
+    trace.text = customHoverData;
+    trace.textinfo = 'percent';
+    trace.hovertext = customHoverData;
+    trace.hoverinfo = 'label+text+percent';
+
     Plotly.newPlot('allocation-chart', [trace], layout, {responsive: true, displayModeBar: false});
 }
 
@@ -140,7 +169,9 @@ function renderCorrelationChart() {
         x: tickers,
         y: tickers,
         type: 'heatmap',
-        colorscale: 'Blues',
+        colorscale: 'RdBu',
+        zmin: -1,
+        zmax: 1,
         showscale: false,
         textTemplate: "%{z:.2f}",
         textfont: {color: "#ffffff"}
@@ -175,6 +206,66 @@ function renderVolatilityChart() {
     };
     
     Plotly.newPlot('volatility-chart', traces, layout, {responsive: true, displayModeBar: false});
+}
+
+// 5. Signals Table
+function renderSignalsTable() {
+    const tbody = document.getElementById('signals-tbody');
+    tbody.innerHTML = '';
+    
+    dashboardData.tickers.forEach(ticker => {
+        const actualArr = dashboardData.forecasts[ticker].actual;
+        const predArr = dashboardData.forecasts[ticker].predicted;
+        
+        const lastActual = actualArr[actualArr.length - 1];
+        const lastPred = predArr[predArr.length - 1];
+        
+        const changePct = (lastPred - lastActual) / lastActual;
+        
+        const action = changePct > 0.01 ? 'BUY' : (changePct < -0.01 ? 'SELL' : 'HOLD');
+        
+        const tr = document.createElement('tr');
+        
+        // Asset
+        const tdAsset = document.createElement('td');
+        tdAsset.innerHTML = `<strong>${ticker.split('.')[0]}</strong>`;
+        
+        // Last Price
+        const tdLast = document.createElement('td');
+        tdLast.innerText = formatCurrency.format(lastActual);
+        
+        // Predicted
+        const tdPred = document.createElement('td');
+        tdPred.innerText = formatCurrency.format(lastPred);
+        
+        // Change
+        const tdChange = document.createElement('td');
+        tdChange.innerText = formatPercent.format(changePct);
+        tdChange.className = changePct > 0 ? 'text-green' : (changePct < 0 ? 'text-red' : '');
+        
+        // Action
+        const tdAction = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.innerText = action;
+        if(action === 'BUY') {
+            badge.className = 'badge badge-buy';
+            badge.innerHTML += ' <i class="ph ph-trend-up"></i>';
+        } else if(action === 'SELL') {
+            badge.className = 'badge badge-sell';
+            badge.innerHTML += ' <i class="ph ph-trend-down"></i>';
+        } else {
+            badge.className = 'badge';
+        }
+        tdAction.appendChild(badge);
+        
+        tr.appendChild(tdAsset);
+        tr.appendChild(tdLast);
+        tr.appendChild(tdPred);
+        tr.appendChild(tdChange);
+        tr.appendChild(tdAction);
+        
+        tbody.appendChild(tr);
+    });
 }
 
 // Sidebar Navigation

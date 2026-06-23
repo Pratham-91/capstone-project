@@ -25,6 +25,44 @@ body {
     /* Subtle background gradient */
     background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%);
     min-height: 100vh;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-dark);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Layout */
@@ -75,11 +113,19 @@ body {
     font-weight: 500;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar nav a i {
+    font-size: 1.2rem;
 }
 
 .sidebar nav a:hover {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
+    padding-left: 2.2rem;
 }
 
 .sidebar nav a.active {
@@ -174,16 +220,17 @@ h2 {
 /* Glassmorphism Panels */
 .glass-panel {
     background: var(--bg-panel);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 16px;
-    box-shadow: var(--glass-shadow);
-    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
 .glass-panel:hover {
     background: var(--bg-panel-hover);
+    border-color: rgba(255,255,255,0.25);
 }
 
 /* Summary Cards */
@@ -193,6 +240,14 @@ h2 {
     gap: 2rem;
     padding: 2rem;
     margin-bottom: 3rem;
+}
+
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 .card h3 {
@@ -261,7 +316,6 @@ h2 {
     color: var(--primary);
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -275,3 +329,61 @@ h2 {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3); 
 }
+
+/* Trading Signals Table */
+.table-container {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+.signals-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.signals-table th, .signals-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.signals-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.signals-table tr:last-child td {
+    border-bottom: none;
+}
+
+.signals-table tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+}
+
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.badge-buy {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-sell {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.text-green { color: #34d399; }
+.text-red { color: #f87171; }

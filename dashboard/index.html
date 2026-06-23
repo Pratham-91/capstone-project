@@ -6,11 +6,19 @@
     <title>Capstone 2026: Time Series Analysis Dashboard</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading Capstone Data...</p>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -19,11 +27,12 @@
                 <h2>Capstone '26</h2>
             </div>
             <nav>
-                <a href="#overview" class="active">Overview</a>
-                <a href="#forecasts">Forecasts</a>
-                <a href="#portfolio">Portfolio Allocation</a>
-                <a href="#volatility">Volatility & Trend</a>
-                <a href="#correlation">Correlation</a>
+                <a href="#overview" class="active"><i class="ph ph-squares-four"></i> Overview</a>
+                <a href="#signals"><i class="ph ph-trend-up"></i> Trading Signals</a>
+                <a href="#forecasts"><i class="ph ph-chart-line-up"></i> Forecasts</a>
+                <a href="#portfolio"><i class="ph ph-pie-chart"></i> Portfolio Allocation</a>
+                <a href="#volatility"><i class="ph ph-activity"></i> Volatility & Trend</a>
+                <a href="#correlation"><i class="ph ph-intersect-three"></i> Correlation</a>
             </nav>
             <div class="sidebar-footer">
                 <p>Data-Driven Stock Analysis</p>
@@ -60,6 +69,29 @@
                     <div class="card">
                         <h3>Model Used</h3>
                         <p class="metric">LSTM</p>
+                    </div>
+                </section>
+
+                <!-- Trading Signals Section -->
+                <section id="signals" class="section">
+                    <div class="section-header">
+                        <h2>Trading Signals & Recommendations</h2>
+                    </div>
+                    <div class="glass-panel table-container">
+                        <table class="signals-table">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Last Price</th>
+                                    <th>Predicted (Day 1)</th>
+                                    <th>Exp. Change</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="signals-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
