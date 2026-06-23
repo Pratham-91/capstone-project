@@ -169,9 +169,7 @@ function renderCorrelationChart() {
         x: tickers,
         y: tickers,
         type: 'heatmap',
-        colorscale: 'RdBu',
-        zmin: -1,
-        zmax: 1,
+        colorscale: 'Viridis',
         showscale: false,
         textTemplate: "%{z:.2f}",
         textfont: {color: "#ffffff"}
