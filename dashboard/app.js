@@ -1,12 +1,14 @@
 // Configuration for Plotly dark theme
-const plotlyLayoutTemplate = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    font: { color: '#94a3b8', family: 'Inter, sans-serif' },
-    margin: { t: 20, r: 20, l: 50, b: 50 },
-    xaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' },
-    yaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' }
-};
+function getPlotlyLayoutTemplate() {
+    return {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#94a3b8', family: 'Inter, sans-serif' },
+        margin: { t: 20, r: 20, l: 50, b: 50 },
+        xaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' },
+        yaxis: { gridcolor: 'rgba(255,255,255,0.05)', zerolinecolor: 'rgba(255,255,255,0.1)' }
+    };
+}
 
 let dashboardData = null;
 let currentTicker = null;
@@ -114,10 +116,10 @@ function renderForecastChart() {
     };
     
     const layout = {
-        ...plotlyLayoutTemplate,
+        ...getPlotlyLayoutTemplate(),
         hovermode: 'x unified',
         legend: { orientation: 'h', y: 1.1 },
-        yaxis: { ...plotlyLayoutTemplate.yaxis, tickprefix: '₹' }
+        yaxis: { ...getPlotlyLayoutTemplate().yaxis, tickprefix: '₹' }
     };
     
     Plotly.newPlot('forecast-chart', [traceActual, tracePred], layout, {responsive: true, displayModeBar: false});
@@ -141,7 +143,7 @@ function renderAllocationChart() {
     };
     
     const layout = {
-        ...plotlyLayoutTemplate,
+        ...getPlotlyLayoutTemplate(),
         showlegend: false,
         annotations: [{
             font: { size: 20, color: '#f8fafc' },
@@ -176,7 +178,7 @@ function renderCorrelationChart() {
     };
     
     const layout = {
-        ...plotlyLayoutTemplate,
+        ...getPlotlyLayoutTemplate(),
         margin: { t: 20, r: 20, l: 80, b: 80 }
     };
     
@@ -198,7 +200,7 @@ function renderVolatilityChart() {
     });
     
     const layout = {
-        ...plotlyLayoutTemplate,
+        ...getPlotlyLayoutTemplate(),
         hovermode: 'x unified',
         legend: { orientation: 'h', y: 1.1 }
     };
